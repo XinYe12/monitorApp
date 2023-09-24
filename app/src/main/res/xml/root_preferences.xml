@@ -1,0 +1,111 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="温度设置">
+
+        <EditTextPreference
+        app:key="tempreture"
+        app:title="温度标准 (°C)"
+        app:useSimpleSummaryProvider="true"
+        android:inputType="number"
+        android:maxLength="10" />
+
+        <EditTextPreference
+            app:key="fault_temp_time"
+            app:title="故障次数上限 (次数)"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+        <EditTextPreference
+            app:key="fault_temp_num"
+            app:title="单次故障时间上限 （秒）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+        <EditTextPreference
+            app:key="warn_temp_time"
+            app:title="预警次数上限 （次数）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+        <EditTextPreference
+            app:key="warn_temp_num"
+            app:title="单次预警时间上限（秒）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="振动设置">
+
+        <EditTextPreference
+            app:key="vibration"
+            app:title="振动标准 （mm/s）—"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+
+        <EditTextPreference
+            app:key="fault_vibr_time"
+            app:title="故障次数上限（次数）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+        <EditTextPreference
+            app:key="fault_vibr_num"
+            app:title="单次故障时间上限（秒）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+        <EditTextPreference
+            app:key="warn_vibr_time"
+            app:title="预警次数上限（次数）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+        <EditTextPreference
+            app:key="warn_vibr_num"
+            app:title="单次预警时间上限 （秒）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="其他">
+
+        <EditTextPreference
+            app:key="warn_time"
+            app:title="累计预警时间上限（秒）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+
+        <EditTextPreference
+            app:key="fault_time"
+            app:title="累计故障时间上限（秒）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+        <EditTextPreference
+            app:key="gear_num"
+            app:title="转速齿齿轮数 （个）"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="number"
+            android:maxLength="10"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory>
+        <Preference
+            android:key="reset_button"
+            android:title="恢复默认(为避免误操作，请双击此按钮）"
+
+            android:selectable="true"
+            android:background="?android:attr/selectableItemBackground" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

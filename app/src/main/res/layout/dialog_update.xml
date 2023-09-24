@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- res/layout/dialog_update.xml -->
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/editTextID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="位号" />
+
+        <EditText
+            android:id="@+id/editTextDeviceId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="编号" />
+
+        <EditText
+            android:id="@+id/editTextPlcAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="PLC 地址" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
