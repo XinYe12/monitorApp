@@ -8,7 +8,8 @@
         app:title="温度标准 (°C)"
         app:useSimpleSummaryProvider="true"
         android:inputType="number"
-        android:maxLength="10" />
+        android:maxLength="10"
+        />
 
         <EditTextPreference
             app:key="fault_temp_time"
