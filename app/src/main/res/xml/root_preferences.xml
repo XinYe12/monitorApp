@@ -4,11 +4,12 @@
     <PreferenceCategory app:title="温度设置">
 
         <EditTextPreference
-        app:key="tempreture"
-        app:title="温度标准 (°C)"
-        app:useSimpleSummaryProvider="true"
-        android:inputType="number"
-        android:maxLength="10"
+            app:key="tempreture"
+            app:title="温度标准 (°C)"
+            app:useSimpleSummaryProvider="true"
+            android:inputType="phone"
+            android:digits = "0123456789"
+            android:maxLength="10"
         />
 
         <EditTextPreference

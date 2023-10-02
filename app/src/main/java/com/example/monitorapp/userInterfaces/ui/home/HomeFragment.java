@@ -56,7 +56,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         binding.add.setOnClickListener(this);
         binding.delete.setOnClickListener(this);
         binding.lookupQuery.setOnClickListener(this);
-        binding.update.setOnClickListener(this);
 
 
 

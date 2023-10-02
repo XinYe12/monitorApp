@@ -4,7 +4,9 @@ package com.example.monitorapp;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,13 +18,24 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.xml.transform.Result;
 
 
 public class ThresholdsSettingsActivity extends AppCompatActivity {
+    private static String[] editTextKeys = {
+            "tempreture", "fault_temp_time", "fault_temp_num",
+            "warn_temp_time", "warn_temp_num",
+            "vibration", "fault_vibr_time", "fault_vibr_num",
+            "warn_vibr_time", "warn_vibr_num",
+            "warn_time", "fault_time", "gear_num"
+    };
     private final static String TAG = "mysql-thresholdSetting";
     private static int deviceID;
     @Override
@@ -55,8 +68,6 @@ public class ThresholdsSettingsActivity extends AppCompatActivity {
     }
 
 
-
-
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -68,13 +79,6 @@ public class ThresholdsSettingsActivity extends AppCompatActivity {
 
 
         private void setupEditTextPreferences() {
-            String[] editTextKeys = {
-                    "tempreture", "fault_temp_time", "fault_temp_num",
-                    "warn_temp_time", "warn_temp_num",
-                    "vibration", "fault_vibr_time", "fault_vibr_num",
-                    "warn_vibr_time", "warn_vibr_num",
-                    "warn_time", "fault_time", "gear_num"
-            };
 
             for (String key : editTextKeys) {
                 EditTextPreference editTextPreference = findPreference(key);
@@ -93,12 +97,26 @@ public class ThresholdsSettingsActivity extends AppCompatActivity {
                             ResultSet resultSet = DBConnection.getDataById(deviceID);
                             //Log.d(TAG,"result set: " + resultSet.toString());
                             if(resultSet.next()){
-                                String columnValue = resultSet.getString(key); // Replace key with the actual column name
-                                getActivity().runOnUiThread(() -> {
-                                    editTextPreference.setText(columnValue);
+                                String columnValue = resultSet.getString(key);
+                                //Log.d(TAG, "column Value: " + columnValue);
+                                requireActivity().runOnUiThread(() -> {
+                                    if (editTextPreference.getKey().equals("vibration")) {
+                                        try {
+                                            final String formattedValue = formattingValues(columnValue, false);
+                                            editTextPreference.setText(formattedValue);
+                                        } catch (NumberFormatException e) {
+                                            // Handle the case where parsing to double fails
+                                            //Log.e(TAG, "not temperature: " +e.getMessage());
+                                        }
+                                    } else {
+                                        final String formattedValue = formattingValues(columnValue, true);
+
+                                        editTextPreference.setText(formattedValue); // Handle other preferences
+                                    }
                                 });
                             }
                         } catch (SQLException e) {
+                            Log.e(TAG, "failed push changes to database: " + e.getMessage());
                             throw new RuntimeException(e);
                         }
                     }).start();
@@ -106,23 +124,42 @@ public class ThresholdsSettingsActivity extends AppCompatActivity {
                 }
             }
         }
-        private void restrictOnlyNumericpad(EditTextPreference editTextPreference){
-            editTextPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                    String stringValue = (String) newValue;
+        private String formattingValues(String value, boolean isInteger){
+            if (value != null) {//if condition checking for null value
+                if(isInteger) {
+                    double doubleValue = Double.parseDouble(value);
+
+                    int intValue = (int) doubleValue;
+                    Log.d(TAG, " testing: " + intValue);
+                    String modifiedValue = String.valueOf(intValue); // Declare a final variable
+                    return modifiedValue;
+                }else{
+                    String formattedValue=null;
                     try {
-                        // Attempt to parse the input as an integer
-                        int integerValue = Integer.parseInt(stringValue);
-                        // Input is a valid integer
-                        return true;
+                        float floatValue = Float.parseFloat(value);
+                        formattedValue = String.format("%.1f", floatValue); // Format with 1 decimal place
+                        Log.d(TAG, "Formatted Value: " + formattedValue);
                     } catch (NumberFormatException e) {
-                        // Input is not a valid integer, show an error message or reset the value
-                        Toast.makeText(getActivity(), "Please enter a valid integer", Toast.LENGTH_SHORT).show();
-                        return false;
+                        // Handle the case where parsing to float fails
+                        Log.e(TAG, "Parsing Error: " + e.getMessage());
                     }
+                    return formattedValue;
+
+                }
+            }else{
+                return null;
+            }
+
+        }
+        private void restrictOnlyNumericpad(EditTextPreference editTextPreference){
+            editTextPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
+                @Override
+                public void onBindEditText(@NonNull EditText editText) {
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT |
+                            InputType.TYPE_CLASS_NUMBER);//this line restrict only user number keyboard
                 }
             });
+
         }
         private void setupResetButtonPreference() {
             Preference resetButtonPreference = findPreference("reset_button");
@@ -148,15 +185,8 @@ public class ThresholdsSettingsActivity extends AppCompatActivity {
 
                 if (resultSet.next()) {
                     // Define an array of keys for the preferences you want to find
-                    String[] preferenceKeys = {
-                            "tempreture", "fault_temp_time", "fault_temp_num",
-                            "warn_temp_time", "warn_temp_num",
-                            "vibration", "fault_vibr_time", "fault_vibr_num",
-                            "warn_vibr_time", "warn_vibr_num",
-                            "warn_time", "fault_time", "gear_num"
-                    };
                     Map<String, String> attributeUpdates = new HashMap<>();
-                    for (String key : preferenceKeys) {
+                    for (String key : editTextKeys) {
 
                         EditTextPreference preference = findPreference(key);
                         if (preference != null) {
@@ -166,7 +196,6 @@ public class ThresholdsSettingsActivity extends AppCompatActivity {
 
                             Log.d(TAG, "Testing what attributes: " + defaultVal);
                             attributeUpdates.put(key, defaultVal);
-
                             // You can work with the 'preference' object here as needed
                         }else{
                             Log.e(TAG, "cannot find designated preference");
