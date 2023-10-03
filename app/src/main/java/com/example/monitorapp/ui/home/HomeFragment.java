@@ -22,13 +22,9 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "mysql";
-    private Button lookupButton, addBtn, deleteBtn, updateBtn;
     private List<HashMap<String, Object>> listIns = new ArrayList<HashMap<String, Object>>();
     private ListView listView = null;
-    private CustomListAdapter customListAdapter;
 
-
-    private View.OnClickListener clickListener;
 
     private FragmentHomeBinding binding;
 

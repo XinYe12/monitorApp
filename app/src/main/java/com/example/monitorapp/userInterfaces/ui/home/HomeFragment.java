@@ -31,6 +31,7 @@ import com.example.monitorapp.databinding.FragmentHomeBinding;
 import com.example.monitorapp.reloadingFragment;
 
 import com.example.monitorapp.userInterfaces.ui.CustomListAdapter;
+import com.example.monitorapp.userInterfaces.ui.dashboard.DashboardFragment;
 
 public class HomeFragment extends Fragment implements View.OnClickListener{
     private static final String TAG = "mysql-homefragment";
@@ -50,17 +51,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
+        /**
+         * setting up the three primary buttons
+         */
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         binding.add.setOnClickListener(this);
         binding.delete.setOnClickListener(this);
         binding.lookupQuery.setOnClickListener(this);
-
-
-
         listView = root.findViewById(R.id.listview_devices);
-
+        lookup();
         if (savedInstanceState != null) {
             // Restore data from saved instance state
             dataList = savedInstanceState.getStringArrayList("dataList");
@@ -74,6 +74,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 listView.setAdapter(customListAdapter1);
             }
         });
+
 
         return root;
     }
@@ -113,40 +114,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
      */
     private void lookup(){
 
-        @SuppressLint("HandlerLeak")
-        final Handler handler = new Handler() {
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
+        new Thread(()->{
 
-                if (msg.what == 1) {
-                    List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) msg.obj;
-                    customListAdapter = new CustomListAdapter(requireContext(), list);
-                    listView.setAdapter(customListAdapter);
-                }
+            try {
+                List<HashMap<String, Object>> devicesList = DBConnection.getInfo(DashboardFragment.company);
+
+                requireActivity().runOnUiThread(()->{
+                    CustomListAdapter adapter = new CustomListAdapter(requireContext(), devicesList);
+                    listView.setAdapter(adapter);
+                    Log.d(TAG, "testing adapater" + devicesList);});
+
+            } catch (SQLException e) {
+                Log.e(TAG, "catched exception: " + e.getMessage());
+                throw new RuntimeException(e);
             }
-        };
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    listIns = DBConnection.getInfo("testing");
-                    Log.d(TAG, listIns.toString());
-                    homeViewModel.updateDataList(listIns);
-                } catch (SQLException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-
-                Message msg = Message.obtain();
-                msg.what = 1;
-                msg.obj = listIns;
-                handler.sendMessage(msg);
 
 
-            }
-        });
-        thread.start();
+        }).start();
     }
     /**
      * this is method popup the add-item dialog window
@@ -184,7 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                             @Override
                             public void run() {
                                 try{
-                                    DBConnection.insert(ID, deviceId, plcAddress);
+                                    DBConnection.insert(ID, deviceId, plcAddress, DashboardFragment.company);
                                     //Toast.makeText(adminDashboards.this, "Data added successfully", Toast.LENGTH_SHORT).show();
                                 }catch(SQLException e){
                                     Log.e(TAG, e.getMessage());

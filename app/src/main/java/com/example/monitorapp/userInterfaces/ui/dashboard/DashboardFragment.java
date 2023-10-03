@@ -30,7 +30,7 @@ import java.util.List;
 
 
 public class DashboardFragment extends Fragment {
-    private final static String TAG = "mysql-HomeFragment";
+    private final static String TAG = "mysql-DashboardFragment";
     private static boolean oneTimeUsername = true;
     public static String company;
     public static String user;

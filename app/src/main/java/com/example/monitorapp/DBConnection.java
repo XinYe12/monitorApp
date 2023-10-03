@@ -44,6 +44,14 @@ public class DBConnection {
         }
         return conn;
     }
+
+    /**
+     *
+     * @param conn, connection instance
+     * @param st
+     * @param rs
+     * @throws Exception
+     */
     public static void release(Connection conn, Statement st, ResultSet rs) throws Exception{
         if (rs != null){
             rs.close();
@@ -74,15 +82,22 @@ public class DBConnection {
         }
     }
 
-    public static List<HashMap<String, Object>> getInfo(String name) throws SQLException{
+    /**
+     *
+     * @param companyName
+     * @return
+     * @throws SQLException
+     */
+    public static List<HashMap<String, Object>> getInfo(String companyName) throws SQLException{
         List<HashMap<String,Object>> list= new ArrayList<>();
         getConn();
         Statement stmt = conn.createStatement();
-        String query = "SELECT id, deviceid, PLC_ip FROM state_info";
+        String query = "SELECT id, deviceid, PLC_ip FROM state_info where company = \"" + companyName + "\"";
         ResultSet resultSet = stmt.executeQuery(query);
         if (resultSet != null){
             while(resultSet.next()){
                 HashMap<String, Object> map = new HashMap<>();
+                Log.d(TAG, "testing from getinfo: " + resultSet.getString("id"));
                 map.put("id", resultSet.getString("id"));
                 map.put("device id", resultSet.getString("deviceid"));
                 map.put("PLC address", resultSet.getString("PLC_ip"));
@@ -93,16 +108,17 @@ public class DBConnection {
         }
         return list;
     }
-    public static void insert(String id, String deviceid, String PLC_address) throws SQLException{
+    public static void insert(String id, String deviceid, String PLC_address, String companyName) throws SQLException{
         getConn();
         PreparedStatement preStmt = null;
 
         try{
-            String query = "INSERT INTO state_info (id, deviceid, PLC_ip) VALUES (?, ?, ?)";
+            String query = "INSERT INTO state_info (id, deviceid, PLC_ip, company) VALUES (?, ?, ?, ?)";
             preStmt = conn.prepareStatement(query);
             preStmt.setString(1, id);
             preStmt.setString(2, deviceid);
             preStmt.setString(3, PLC_address);
+            preStmt.setString(4, companyName);
             preStmt.executeUpdate();
         }catch(Exception e){
             Log.e(TAG, e.getMessage());

@@ -11,22 +11,24 @@
         android:padding="16dp">
 
         <EditText
-            android:id="@+id/editTextID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="位号" />
-
-        <EditText
             android:id="@+id/editTextDeviceId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="编号" />
+            android:hint="位号 字母+数字 范例：lizi124" />
+
+        <EditText
+            android:id="@+id/editTextID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="编号 纯数字 范例：8902" />
 
         <EditText
             android:id="@+id/editTextPlcAddress"
             android:layout_width="match_parent"
+            android:inputType="number"
             android:layout_height="wrap_content"
-            android:hint="PLC 地址" />
+            android:hint="PLC 地址 范例：1292.23.523" />
     </LinearLayout>
 
 

@@ -104,7 +104,7 @@
             android:layout_weight="1"
             android:width="1dp"
             android:textSize="12sp"
-            android:text="查询" />
+            android:text="刷新" />
 
 
     </LinearLayout>
