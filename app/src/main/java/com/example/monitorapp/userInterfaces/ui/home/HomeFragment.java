@@ -32,15 +32,18 @@ import com.example.monitorapp.reloadingFragment;
 
 import com.example.monitorapp.userInterfaces.ui.CustomListAdapter;
 import com.example.monitorapp.userInterfaces.ui.dashboard.DashboardFragment;
+import com.example.monitorapp.userInterfaces.ui.dashboard.DashboardViewModel;
 
-public class HomeFragment extends Fragment implements View.OnClickListener{
+public class HomeFragment extends Fragment implements View.OnClickListener, DashboardFragment.CompanyNameCallback{
     private static final String TAG = "mysql-homefragment";
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
     private ListView listView;
     private List<HashMap<String, Object>> listIns = new ArrayList<HashMap<String, Object>>();
-    private ArrayList<String> dataList = new ArrayList<>();
+    private List<HashMap<String, Object>> devicesList = new ArrayList<HashMap<String, Object>>();
+    private boolean dataLoaded = false;
     private CustomListAdapter customListAdapter;
+
     private reloadingFragment reloadingFragment = new reloadingFragment(); // Declare the reloadingFragment
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -48,33 +51,40 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        /**
-         * setting up the three primary buttons
-         */
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         binding.add.setOnClickListener(this);
         binding.delete.setOnClickListener(this);
         binding.lookupQuery.setOnClickListener(this);
         listView = root.findViewById(R.id.listview_devices);
-        lookup();
-        if (savedInstanceState != null) {
-            // Restore data from saved instance state
-            dataList = savedInstanceState.getStringArrayList("dataList");
+
+        // Check if data was loaded before
+        if (dataLoaded && devicesList != null) {
+            // Data was previously loaded, use it to set up the adapter
+            CustomListAdapter customListAdapter1 = new CustomListAdapter(requireContext(), devicesList);
+            listView.setAdapter(customListAdapter1);
+        } else {
+            // Data was not loaded, load it
+            // Create an instance of your DashboardFragment
+            DashboardFragment dashboardFragment = new DashboardFragment();
+            Bundle args = new Bundle();
+            args.putString("username", "admin");
+            dashboardFragment.setArguments(args);
+
+            // Call the getCompanyName method and pass this class as the callback
+            dashboardFragment.getCompanyName(this);
+
         }
 
-        // Set up the adapter and list data
 
+        // Set up the adapter and list data (assuming you want to set it up after companyName is loaded)
         homeViewModel.getDataList().observe(getViewLifecycleOwner(), newDataList -> {
-            if(newDataList != null){
+            if (newDataList != null) {
                 CustomListAdapter customListAdapter1 = new CustomListAdapter(requireContext(), newDataList);
                 listView.setAdapter(customListAdapter1);
             }
         });
-
 
         return root;
     }
@@ -82,7 +92,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArrayList("dataList", dataList);
+        // Store the data if it has been loaded
+        if (dataLoaded && devicesList != null) {
+            // Convert devicesList to a Serializable format (e.g., ArrayList)
+            ArrayList<HashMap<String, Object>> serializableList = new ArrayList<>(devicesList);
+            outState.putSerializable("dataList", serializableList);
+        }
     }
 
     @Override
@@ -109,29 +124,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+
     /**
      * this is the query method for user to refresh the page to see content
      */
     private void lookup(){
-
+        Log.d(TAG, "oncompanynameloadded called");
         new Thread(()->{
-
             try {
-                List<HashMap<String, Object>> devicesList = DBConnection.getInfo(DashboardFragment.company);
+                devicesList = DBConnection.getInfo(DashboardFragment.company);
 
                 requireActivity().runOnUiThread(()->{
                     CustomListAdapter adapter = new CustomListAdapter(requireContext(), devicesList);
                     listView.setAdapter(adapter);
-                    Log.d(TAG, "testing adapater" + devicesList);});
+                    Log.d(TAG, "testing adapter" + devicesList);});
+                dataLoaded = true;
 
             } catch (SQLException e) {
                 Log.e(TAG, "catched exception: " + e.getMessage());
                 throw new RuntimeException(e);
             }
-
-
         }).start();
     }
+    @Override
+    public void onCompanyNameLoaded(String companyName, String username) {
+        // Process the loaded company name here
+        Log.d(TAG, "Company Name: " + companyName);
+        lookup();
+    }
+
+
     /**
      * this is method popup the add-item dialog window
      */

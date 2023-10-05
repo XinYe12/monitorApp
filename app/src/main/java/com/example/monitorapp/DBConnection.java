@@ -93,6 +93,7 @@ public class DBConnection {
         getConn();
         Statement stmt = conn.createStatement();
         String query = "SELECT id, deviceid, PLC_ip FROM state_info where company = \"" + companyName + "\"";
+        Log.d(TAG, "testing from getinfo: " + query);
         ResultSet resultSet = stmt.executeQuery(query);
         if (resultSet != null){
             while(resultSet.next()){

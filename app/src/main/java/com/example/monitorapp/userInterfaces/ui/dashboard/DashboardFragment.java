@@ -2,6 +2,8 @@ package com.example.monitorapp.userInterfaces.ui.dashboard;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import android.view.LayoutInflater;
@@ -205,25 +207,17 @@ public class DashboardFragment extends Fragment {
             new Thread(() -> {
                 try {
                     String companyName = DBConnection.getCompanyName(username);
-                    Log.d(TAG, companyName);
+                    Log.d(TAG, "company name successfully retrieved: "+companyName);
                     company = companyName;
                     user = username;
+                    callback.onCompanyNameLoaded(company, user);//callback doesnt require to run on ui thread
 
-                    // Call the callback with the company name and username
-                    if(getActivity()!= null) {
-                        getActivity().runOnUiThread(() -> {
-                            //Log.d(TAG, "is it here"); not here
-                            callback.onCompanyNameLoaded(companyName, username);
-                        });
-                    }else{
-                        Log.e(TAG, "Fragment's activity is null");
-                    }
                 } catch (Exception e) {
                     Log.e(TAG, "failed get companyname: " + e.getMessage());
                 }
             }).start();
         } catch (NullPointerException e) {
-            Log.e(TAG, "username null" + e.getMessage());
+            Log.e(TAG,  "null pointer" + e.getMessage());
         }
     }
     @Override
