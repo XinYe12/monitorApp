@@ -92,23 +92,30 @@ public class errorAlert extends Fragment {
     private void deleteSelectedItems() {
         Log.d(TAG, "clicked deletion");
         if (!selectedItems.isEmpty()) {
-            Log.d(TAG, "checked: " + selectedItems);
+
             // Create a copy of the alertsDataList to avoid ConcurrentModificationException
             List<Map<String, String>> copyList = new ArrayList<>(alertsDataList);
-
+            Log.d(TAG, "checked: " + copyList);
             // Create a list to store the error codes of selected items
             List<String> errorCodesToDelete = new ArrayList<>();
 
             // Remove selected items from the copyList and collect their error codes
             Collections.sort(selectedItems, Collections.reverseOrder()); // Sort in reverse order to avoid index issues
+            // Collect error codes first
             for (int position : selectedItems) {
                 if (position >= 0 && position < copyList.size()) {
-                    errorCodesToDelete.add(copyList.get(position).get("error_code"));
+                    errorCodesToDelete.add(copyList.get(position).get("id"));
+                }
+            }
+
+// Remove items from copyList
+            for (int position : selectedItems) {
+                if (position >= 0 && position < copyList.size()) {
                     copyList.remove(position);
                 }
             }
 
-            // Clear selectedItems list
+
             selectedItems.clear();
 
             // Update the adapter with the modified data

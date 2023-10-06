@@ -434,7 +434,7 @@ public class DBConnection {
         new Thread(() -> {
             List<Map<String, String>> alertsList = new ArrayList<>();
 
-            String sql = "SELECT * FROM update_alertlist WHERE company = ?";
+            String sql = "SELECT id, goodornot, runorstop, question, time_device FROM state_info WHERE company = ?";
 
             try (Connection conn = getConn();
                  PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -466,6 +466,10 @@ public class DBConnection {
         return alertsLiveData;
     }
 
+    /**
+     *
+     * @param errorCodesToDelete this is the combination of selected alerts ready to be deleted
+     */
     public static void deleteItemsFromDatabase(List<String> errorCodesToDelete) {
         Connection conn = null;
         PreparedStatement preparedStatement = null;
@@ -474,7 +478,7 @@ public class DBConnection {
             conn = getConn();
 
             // Create the SQL query to delete items based on error codes
-            String deleteQuery = "DELETE FROM update_alertlist WHERE id = ?";
+            String deleteQuery = "DELETE FROM state_info WHERE id = ?";
             Log.d(TAG, "deleting id: " + errorCodesToDelete);
             // Prepare the statement
             preparedStatement = conn.prepareStatement(deleteQuery);

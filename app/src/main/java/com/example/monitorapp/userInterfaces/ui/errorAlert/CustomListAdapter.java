@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 
 import com.example.monitorapp.R;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,14 +43,16 @@ public class CustomListAdapter extends ArrayAdapter<Map<String, String>> {
         TextView deviceNameTextView = convertView.findViewById(R.id.textView1_errorDeviceID);
         TextView datetimeTextView = convertView.findViewById(R.id.textView2_errorInfo_datetime);
         TextView issuesTextView = convertView.findViewById(R.id.textView2_errorInfo_issues);
+        TextView goodornot = convertView.findViewById(R.id.textView0_goodornot);
 
         // Populate UI elements with data
         checkBox.setChecked(false); // You can set your checkbox state here
 
         if (itemData != null) {
-            deviceNameTextView.setText(itemData.get("device_name"));
-            datetimeTextView.setText("时间：" + itemData.get("datetime"));
-            issuesTextView.setText("问题：" + itemData.get("issues"));
+            goodornot.setText(itemData.get("goodornot"));
+            deviceNameTextView.setText(itemData.get("id"));
+            datetimeTextView.setText("时间：" + itemData.get("time_device"));
+            issuesTextView.setText("问题：" + itemData.get("runorstop")+ " " + itemData.get("issues"));
         }
 
         // Handle CheckBox clicks

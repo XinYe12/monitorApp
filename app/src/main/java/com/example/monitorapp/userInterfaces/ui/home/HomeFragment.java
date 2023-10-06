@@ -133,9 +133,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dash
         new Thread(()->{
             try {
                 devicesList = DBConnection.getInfo(DashboardFragment.company);
-
+                listIns = devicesList;
                 requireActivity().runOnUiThread(()->{
                     CustomListAdapter adapter = new CustomListAdapter(requireContext(), devicesList);
+                    customListAdapter = new CustomListAdapter(requireContext(), devicesList);
                     listView.setAdapter(adapter);
                     Log.d(TAG, "testing adapter" + devicesList);});
                 dataLoaded = true;
@@ -247,17 +248,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dash
     }
 
     private void deleteCheckedRecords() throws SQLException {
-
         SparseBooleanArray checkedItemPositions = customListAdapter.getCheckedItems();
         List<Integer> itemsToRemove = new ArrayList<>();
-        Log.d(TAG, "checked items: "+checkedItemPositions.toString());
+        Log.d(TAG, "checked items: " + checkedItemPositions.toString());
+
         if (checkedItemPositions != null) {
-            List<HashMap<String, Object>> listCopy = new ArrayList<>(listIns);  // Create a copy
-            for (int i = listCopy.size() - 1; i >= 0; i--) {
+            for (int i = 0; i < listIns.size(); i++) {
                 if (checkedItemPositions.get(i)) {
                     Log.d(TAG, "Item at position " + i + " is checked for deletion.");
 
-                    HashMap<String, Object> selectedItem = listCopy.get(i);
+                    HashMap<String, Object> selectedItem = listIns.get(i);
                     String id = (String) selectedItem.get("id");
                     Log.d(TAG, "Deleting record with ID: " + id);
 
@@ -273,21 +273,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dash
                 }
             }
 
-            // Remove selected items from the listCopy
-            for (int index : itemsToRemove) {
-                listCopy.remove(index);
+            // Remove selected items from the listIns
+            for (int i = itemsToRemove.size() - 1; i >= 0; i--) {
+                int index = itemsToRemove.get(i);
+                listIns.remove(index);
             }
-
-            // Update the original list after removing items
-            listIns.clear();
-            listIns.addAll(listCopy);
         } else {
             Log.e(TAG, "CheckedItemPositions is null.");
         }
 
         // Clear the checked positions
-        listView.clearChoices();
-
+        customListAdapter.getCheckedItems().clear();
+        customListAdapter.notifyDataSetChanged();
     }
+
 
 }
