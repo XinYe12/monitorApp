@@ -153,13 +153,14 @@ public class DBConnection {
     public static String getCompanyName(String username){
         getConn();
         String companyName = null;
+        String query = "SELECT company FROM admin_user_info WHERE idname = ?";
 
-            String query = "SELECT company FROM admin_user_info WHERE idname = ?";
         try(PreparedStatement preparedStatement = conn.prepareStatement(query)){
             preparedStatement.setString(1, username);
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 if(resultSet.next()){
                     companyName = resultSet.getString("company");
+                    Log.d(TAG, "company name from getCompanyName: " + companyName);
                 }
             }
         }catch(SQLException e){

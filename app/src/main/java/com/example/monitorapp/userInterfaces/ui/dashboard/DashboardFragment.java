@@ -202,7 +202,7 @@ public class DashboardFragment extends Fragment {
     public void getCompanyName(CompanyNameCallback callback) {
         try {
             String username = getArguments().getString("username");
-            Log.d(TAG, "username: " + username);
+            Log.d(TAG, "username received at getCompany: " + username);
             oneTimeUsername = false;
             new Thread(() -> {
                 try {
