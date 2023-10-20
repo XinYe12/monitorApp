@@ -26,12 +26,12 @@ public class userSession {
         try{
             conn = dbConnection.getConn();
             stmt = conn.createStatement();
-            String query = "SELECT * FROM admin_user_info WHERE idname = " + username;
+            String query = "SELECT * FROM admin_user_info WHERE idname = " + "\"" + username + "\"" ;
             rs = stmt.executeQuery(query);
             if (rs.next()){
-                return true;
+                return true;    //that means the user exists
             }else{
-                return false;
+                return false;   //user doesnt exist
             }
 
         }catch(Exception  e){

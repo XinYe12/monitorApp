@@ -46,7 +46,7 @@ public class register extends AppCompatActivity {
         String companyName = company.getText().toString();
         String adrs = address.getText().toString();
         String phoneNum = phone.getText().toString();
-        String userType = "user";
+        String userType = "user";//unless otherwise stated, there will only be user registered
         User user = new User();
         user.setUsername(username);
         user.setCompany(companyName);
@@ -62,12 +62,12 @@ public class register extends AppCompatActivity {
                 try {
                     boolean userExist = userSession.select(user.getUsername());
                     if (userExist){
-                        msg = 1;
-                        Log.d(TAG, "valid username");
-                    }else{
                         boolean flag = userSession.register(user);
                         Log.e(TAG, "user exists");
+                        msg = 1;
+                    }else{
                         msg = 2;
+                        Log.d(TAG, "valid username");
                     }
                     hand.sendEmptyMessage(msg);
                 } catch (Exception e) {
