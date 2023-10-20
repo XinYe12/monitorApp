@@ -69,7 +69,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Dash
             // Create an instance of your DashboardFragment
             DashboardFragment dashboardFragment = new DashboardFragment();
             Bundle args = new Bundle();
-            args.putString("username", "admin");
+            args.putString("username", DashboardFragment.user);
             dashboardFragment.setArguments(args);
 
             // Call the getCompanyName method and pass this class as the callback

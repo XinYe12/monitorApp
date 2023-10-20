@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 if( loginStatus == 1){
                     Log.d(TAG, "Login good");
                     passUsername(inputUsername.getText().toString());
+                    Log.d(TAG, "username sent: "+inputUsername.getText().toString());
                     startMainUI();
 
                 }else{
